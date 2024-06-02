@@ -90,27 +90,27 @@ module.exports = (app) => {
    * @return {200, {username, primary_email, first_name, last_name, city, games[...]}}
    */
   app.get("/v1/user/:username", async (req, res) => {
-    let user = await app.models.User.findOne({
-      username: req.params.username.toLowerCase(),
-    })
-      .populate("games")
-      .exec();
+    try {
+      // Validate username input
+      const username = req.params.username.toLowerCase();
+      // CS6387 do not allow queries on non-alphanumeric strings.
+      // See readme for full explanation
+      if (!username.match(/^[a-zA-Z0-9]+$/)) {
+        return res.status(400).send({ error: "Invalid username format" });
+      }
 
-    if (!user)
-      res.status(404).send({ error: `unknown user: ${req.params.username}` });
-    else {
-      // Filter games data for only profile related info
-      const filteredGames = user.games.map((game) =>
-        filterGameForProfile(game)
-      );
-      res.status(200).send({
-        username: user.username,
-        primary_email: user.primary_email,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        city: user.city,
-        games: filteredGames,
-      });
+      let user = await app.models.User.findOne({ username: username });
+
+      if (!user) {
+        return res.status(404).send({ error: `unknown user: ${req.params.username}` });
+      } else {
+        return res.status(200).end();
+      }
+    } catch (err) {
+      // Log error for monitoring
+      console.error('Error querying user:', err);
+      // Do not expose internal error details to the client
+      return res.status(500).send({ error: "Internal server error" });
     }
   });
 
