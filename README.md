@@ -1,32 +1,95 @@
-# CS 5288: Web-based System Architecture 
-## Programming Assignment 6
+# README
 
-## Overview
+## Secure Programming Assignment
 
-This is it!  In this assignment you will get to a complete web-based Klondike Solitaire application.  Let's get started...
+### Overview
+This repository contains a web-based solitaire game, originally developed as an assignment for a previous class. This project aims to enhance the original application by incorporating several security and coding standards. The updated application addresses the following requirements:
+- Filtering/user input
+- Countering injection attacks
+- Implementing secure coding standards
+- Proper error handling
 
-You should submit a demo of your application as a video link (github, youtube, Brightspace, etc.) to Brightspace.
+### Features
+1. **Filtering/User Input**: Ensures all user inputs are validated and sanitized to prevent any malicious data from being processed.
+2. **Countering Injection Attacks**: Implements strategies to prevent various types of injection attacks, including SQL, HTML, and JavaScript injections.
+3. **Secure Coding Standards**: Demonstrates secure coding practices by adhering to selected coding standards. Comments in the code highlight specific standards and practices used.
+4. **Proper Error Handling**: Implements comprehensive error handling to manage exceptions and provide meaningful error messages without exposing sensitive information.
 
-* 30% of your grade will be awarded based on a manual code review by the instructor
-* 70% of your grade will be based on your demo and the application's functionality
+### Project Structure
+```
+├── src
+│   ├── client
+│   │   ├── components
+│   │   │   ├── edit.js
+│   │   │   ├── game-list.js
+│   │   │   ├── game.js
+│   │   │   ├── header.js
+│   │   │   ├── history.js
+│   │   │   ├── landing.js
+│   │   │   ├── login.js
+│   │   │   ├── logout.js
+│   │   │   ├── pile.js
+│   │   │   ├── profile.js
+│   │   │   ├── register.js
+│   │   │   ├── results.js
+│   │   │   ├── shared.js
+│   │   │   └── start.js
+│   │   └── main.js
+│   ├── server
+│   │   ├── api
+│   │   │   ├── index.cjs
+│   │   │   └── v1
+│   │   │       ├── game.cjs
+│   │   │       ├── session.cjs
+│   │   │       ├── user.cjs
+│   │   │       └── validate.cjs
+│   │   ├── base.pug
+│   │   ├── index.cjs
+│   │   ├── models
+│   │   │   ├── card_state.cjs
+│   │   │   ├── game.cjs
+│   │   │   ├── move.cjs
+│   │   │   └── user.cjs
+│   │   └── solitare.cjs
+│   └── shared
+│       └── index.js
+```
 
-* You are free to change, add or remove any code within your application.  All reused code (not recorded into package.json) must be attributed
+### How to Run
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/joshualawrencemorgan/solitaire-web
+   ```
+2. **Navigate to the Project Directory and Compile**:
+   ```bash
+   cd solitaire-web
+   npm run build
+   npm run start
+   ```
+3. **Open game in a browser**:
+    ```txt
+    navigate to the lookback address at port 8080 in any modern web browser to start playing the solitaire game.
+    ```
 
-### Here are the places to earn (or lose) points:
+*TODO
+### Detailed Explanations
 
-1. (30 points) Instructor code review.  Is it clean, well-structured, modular code.
+#### Filtering/User Input
 
-1. (20 points) Enable modification of a user's profile.  Must be saved back to the DB and viewable immediately by anyone else the going to the user's profile page and within the user's own header component.
-
-1. (30 points) Fully working "results" page.  Must display information for every move in a game.
-
-1. (10 points) Recognize end of game, i.e. that there are no moves from piles to the stacks and that there are no useable moves from the discard pile to the stacks.  This recognition may ignore rearrangements of the piles that would result in new moves becoming available.  So, if end-of-game is recognized, prompt user if they want to end game.  The other possible end of game is that all cards have been successfully moved to the four foundation piles.
-
-1. (10 points) Infinite undo and infinite redo.  Two UI buttons that let the user undo all moves back to the start of the game.  This will require new REST API endpoints to properly handle game state.  The redo stack should always be cleared if the user plays a new move.
-
-1. (-10 points) Console is spewing any errors or warnings.  I like it clean people!
+#### Countering Injection Attacks
 
 
-## Submission:
+#### Secure Coding Standards
 
-You must commit your code to your repo by the start of class on the due date.  Failure to do so will result in the loss of the 30 points from code review. 
+
+#### Proper Error Handling
+
+### Conclusion
+This enhanced version of the web-based solitaire game demonstrates an understanding of secure coding practices, user input validation, and error handling. By following established coding standards and implementing security measures, the application provides a more robust and secure user experience.
+
+### Submission
+The complete source code is included in this repository. Additions made for the Secure Programming assignment were prepended with a comment including an explanation as well as the string `CS6387`.
+
+---
+
+For any further questions or clarifications, feel free to contact me at [joshua.morgan@vanderbilt.edu].
