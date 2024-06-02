@@ -21,11 +21,17 @@ module.exports = (app) => {
   app.post("/v1/game", async (req, res) => {
     try {
       if (!req.session.user) return res.status(401).send({ error: "unauthorized" });
+
+      /* CS6387
+      * Enchanced the Joi input validation to be more explicit
+      * Games explicitly added as functionality grows
+      */
       const schema = Joi.object({
-        game: Joi.string().lowercase().required(),
-        color: Joi.string().lowercase().required(),
-        draw: Joi.any(),
+        game: Joi.string().lowercase().valid('solitaire').required(),  // Games explicitly added as functionality grows
+        color: Joi.string().lowercase().valid('red', 'blue').required(),
+        draw: Joi.number().integer().min(1).max(3).required(),
       });
+
       const data = await schema.validateAsync(req.body, { stripUnknown: true });
       let newGame = {
         owner: req.session.user,

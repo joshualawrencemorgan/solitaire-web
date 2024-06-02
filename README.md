@@ -75,8 +75,38 @@ This repository contains a web-based solitaire game, originally developed as an 
 ### Detailed Explanations
 
 #### Filtering/User Input
+Improper input validation found in src/server/api/v1/game.cjs
 
-Previously there was no input validation on user account lookups.
+```javascript
+  app.post("/v1/game", async (req, res) => {
+    try {
+      if (!req.session.user) return res.status(401).send({ error: "unauthorized" });
+      const schema = Joi.object({
+        game: Joi.string().lowercase().required(),
+        color: Joi.string().lowercase().required(),
+        draw: Joi.any(),
+      });
+```
+Changes made to the program.
+
+```javascript
+      /* CS6387
+      * Enchanced the Joi input validation to be more explicit
+      * Games explicitly added as functionality grows
+      */
+      const schema = Joi.object({
+        game: Joi.string().lowercase().valid('solitaire').required(),  // Games explicitly added as functionality grows
+        color: Joi.string().lowercase().valid('red', 'blue').required(),
+        draw: Joi.number().integer().min(1).max(3).required(),
+      });
+```
+
+Ensuring security in web applications is paramount, and one critical aspect of this is validating and sanitizing user inputs explicitly. By being explicit when accepting input, such as specifying valid options and constraints for each field, you mitigate the risk of injection attacks, data corruption, and other malicious activities. For instance, in the revised schema, restricting the game field to only accept the string 'solitaire' and the color field to 'red' or 'blue' ensures that only valid and expected values are processed. Similarly, enforcing the draw field to be an integer between 1 and 3 prevents invalid data from causing unexpected behavior or security vulnerabilities. This explicit validation not only enhances the application's robustness but also helps prevent attackers from exploiting input fields to execute arbitrary code or inject harmful data, thus maintaining the integrity and security of the system.
+
+#### Countering Injection Attacks
+
+Previously there was a risk for injection on user account lookups. The function would only call toLowerCase on user provided strings for the query.
+
 src\server\api\v1\user.cjs
 ```javascript
   app.head("/v1/user/:username", async (req, res) => {
@@ -90,7 +120,7 @@ src\server\api\v1\user.cjs
 ```
 User account lookups, while they do not modify any data, still involve passing user-supplied strings to the MongoDB server. This process can expose the application to various security risks, such as injection attacks. To mitigate these risks and adhere to secure coding practices, several key changes have been implemented to enhance the security of user account lookups. These changes align with recommendations from the OWASP (Open Web Application Security Project) and other security guidelines.
 
-OWASP Input Validation Cheat Sheet: This cheat sheet emphasizes that all inputs should be validated to ensure they are within the expected format. It recommends using whitelists for validation, which only allows characters that are explicitly permitted .
+OWASP Input Validation Cheat Sheet: This cheat sheet emphasizes that all inputs should be validated to ensure they are within the expected format. It recommends using whitelists for validation, which only allows characters that are explicitly permitted. In this example the program now will not accept string that contain any non-alphanumeric characters.
 ```javascript
 app.head("/v1/user/:username", async (req, res) => {
   try {
@@ -132,10 +162,6 @@ Proper error handling prevents the exposure of sensitive information and provide
   });
 ```
 
-
-#### Countering Injection Attacks
-TODO
-
 #### Secure Coding Standards
 TODO
 
@@ -144,7 +170,7 @@ TODO
 This enhanced version of the web-based solitaire game demonstrates an understanding of secure coding practices, user input validation, and error handling. By following established coding standards and implementing security measures, the application provides a more robust and secure user experience.
 
 ### Submission
-The complete source code is included in this repository. Additions made for the Secure Programming assignment were prepended with a comment including an explanation as well as the string `CS6387`.
+The complete source code is included in this repository. Additions made for the Secure Programming assignment were prepended with a comment including an explanation as well as the string `CS6387` though an example of each type of change was presented in this document.
 
 ---
 
