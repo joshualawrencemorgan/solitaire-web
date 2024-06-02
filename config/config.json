@@ -1,0 +1,15 @@
+{
+  "url": "http://127.0.0.1",
+  "api_version": "/v1",
+  "mongodb": "mongodb://127.0.0.1:27017/morgj12",
+  "port": 8080,
+  "environments" : {
+    "test": {
+      "mongodb": "mongodb://127.0.0.1:55000/testing",
+      "port": 8081
+    },
+    "ci": {
+      "mongodb": "mongodb://127.0.0.1:27017/testing"
+    }
+  }
+}
