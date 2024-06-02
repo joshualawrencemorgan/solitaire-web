@@ -98,7 +98,7 @@ module.exports = (app) => {
       if (!username.match(/^[a-zA-Z0-9]+$/)) {
         return res.status(400).send({ error: "Invalid username format" });
       }
-
+      // CS6387 look on now validated string
       let user = await app.models.User.findOne({ username: username });
 
       if (!user) {
@@ -109,7 +109,7 @@ module.exports = (app) => {
     } catch (err) {
       // Log error for monitoring
       console.error('Error querying user:', err);
-      // Do not expose internal error details to the client
+      // CS6387 OWASP recommends to not expose internal error details to the client
       return res.status(500).send({ error: "Internal server error" });
     }
   });

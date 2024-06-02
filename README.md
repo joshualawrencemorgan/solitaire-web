@@ -102,7 +102,35 @@ app.head("/v1/user/:username", async (req, res) => {
     ...
 ```
 
+#### Proper Error Handling
 
+Proper error handling prevents the exposure of sensitive information and provides a better user experience. The code now uses a try-catch block to handle any errors that occur during the user lookup process. This ensures that internal error details are not exposed to the client, and meaningful error messages are returned instead.
+```javascript
+  app.get("/v1/user/:username", async (req, res) => {
+    try {
+      // Validate username input
+      const username = req.params.username.toLowerCase();
+      // CS6387 do not allow queries on non-alphanumeric strings.
+      // See readme for full explanation
+      if (!username.match(/^[a-zA-Z0-9]+$/)) {
+        return res.status(400).send({ error: "Invalid username format" });
+      }
+      // CS6387 look on now validated string
+      let user = await app.models.User.findOne({ username: username });
+
+      if (!user) {
+        return res.status(404).send({ error: `unknown user: ${req.params.username}` });
+      } else {
+        return res.status(200).end();
+      }
+    } catch (err) {
+      // Log error for monitoring
+      console.error('Error querying user:', err);
+      // CS6387 OWASP recommends to not expose internal error details to the client
+      return res.status(500).send({ error: "Internal server error" });
+    }
+  });
+```
 
 
 #### Countering Injection Attacks
@@ -111,8 +139,6 @@ TODO
 #### Secure Coding Standards
 TODO
 
-#### Proper Error Handling
-TODO
 
 ### Conclusion
 This enhanced version of the web-based solitaire game demonstrates an understanding of secure coding practices, user input validation, and error handling. By following established coding standards and implementing security measures, the application provides a more robust and secure user experience.
@@ -126,5 +152,5 @@ For any further questions or clarifications, feel free to contact me at [joshua.
 
 ### References
 OWASP Input Validation Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html
-
+OWASP Error Handling, Logging, and Intrusion Detection Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Error_Handling_Cheat_Sheet.html
 OWASP Rate Limiting Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Rate_Limiting_Cheat_Sheet.html
