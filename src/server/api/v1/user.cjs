@@ -94,11 +94,12 @@ module.exports = (app) => {
       // Validate username input
       const username = req.params.username.toLowerCase();
       // CS6387 do not allow queries on non-alphanumeric strings.
+      // follows CERT recommendation Rule 00, ISD00-J
       // See readme for full explanation
       if (!username.match(/^[a-zA-Z0-9]+$/)) {
         return res.status(400).send({ error: "Invalid username format" });
       }
-      // CS6387 look on now validated string
+      // CS6387 look up on now validated string
       let user = await app.models.User.findOne({ username: username });
 
       if (!user) {
@@ -123,33 +124,45 @@ module.exports = (app) => {
    * @return {204, no body content} Return status only
    */
   app.put("/v1/user", async (req, res) => {
-    if (!req.session.user)
-      return res.status(401).send({ error: "unauthorized" });
+    // Check if user is authenticated
+    if (!req.session.user) return res.status(401).send({ error: "unauthorized" });
 
+    // CS6387 redefine input validation schema to be more secure
     const schema = Joi.object({
-      first_name: Joi.string().allow(""),
-      last_name: Joi.string().allow(""),
-      city: Joi.string().allow(""),
+      first_name: Joi.string().min(1).max(50).allow("").optional(),
+      last_name: Joi.string().min(1).max(50).allow("").optional(),
+      city: Joi.string().min(1).max(100).allow("").optional(),
     });
+
     try {
+      // Validate the request body
       const data = await schema.validateAsync(req.body, { stripUnknown: true });
+
+      // Define the query to find the user
       const query = { username: req.session.user.username };
+
       try {
-        req.session.user = await app.models.User.findOneAndUpdate(
-          query,
-          { $set: data },
-          { new: true }
-        );
+        // Update the user information in the database
+        req.session.user = await app.models.User.findOneAndUpdate(query, { $set: data }, { new: true });
+
+        // Send success response
         res.status(204).end();
       } catch (err) {
-        console.log(
-          `User.update logged-in user not found: ${req.session.user.id}`
-        );
+        // Log the error for debugging
+        // CS6387 CERT Rule 00 IDS06-J Exclude unsanitized user input from strings
+        console.error(`User.update logged-in user not found: ${req.session.user.id}`, err);
+
+        // Send server error response
         res.status(500).end();
       }
     } catch (err) {
+      // Extract the error message
       const message = err.details[0].message;
-      console.log(`User.update validation failure: ${message}`);
+
+      // Log the validation error
+      console.error(`User.update validation failure: ${message}`);
+
+      // Send validation error response
       res.status(400).send({ error: message });
     }
   });

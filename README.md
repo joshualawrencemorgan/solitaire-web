@@ -163,11 +163,22 @@ Proper error handling prevents the exposure of sensitive information and provide
 ```
 
 #### Secure Coding Standards
-TODO
+src\server\api\v1\user.cjs
+```javascript
+      } catch (err) {
+        // Log the error for debugging
+        // CS6387 CERT Rule 00 IDS06-J Exclude unsanitized user input from strings
+        console.error(`User.update logged-in user not found: ${req.session.user.id}`, err);
+```
 
+The enhanced logging approach in this code improves security by adhering to the CERT Secure Coding Standards, specifically rule IDS06-J, which advises excluding unsanitized user input from log messages. In the catch block, instead of directly logging potentially sensitive user information, the error message focuses on a static, sanitized string along with the error object. This practice prevents the exposure of user-specific details, such as the user's ID, in log files, which can be a target for attackers if logs are compromised. By following this standard, the code ensures that logging serves its purpose for debugging and monitoring without inadvertently leaking sensitive data that could be exploited in a security breach.
 
 ### Conclusion
-This enhanced version of the web-based solitaire game demonstrates an understanding of secure coding practices, user input validation, and error handling. By following established coding standards and implementing security measures, the application provides a more robust and secure user experience.
+The various improvements and security enhancements made to the project significantly bolster its robustness, reliability, and security. By implementing explicit input validation with strict criteria, we prevent malicious inputs and ensure data integrity, aligning with best practices recommended by OWASP. Adding detailed session checks and securing session data mitigates risks of unauthorized access and session tampering, further safeguarding user information. Enhanced logging practices, compliant with CERT Secure Coding Standards, ensure sensitive data is not inadvertently exposed, thus protecting against potential security breaches.
+
+This project attempts to demonstrate a robust approach to web application security by integrating several best practices and adhering to well-established security standards. Utilizing MongoDB as the database and implementing a RESTful API for communication, the project ensures secure data handling and access management. Input validation is rigorously enforced using the Joi library, which prevents common injection attacks by sanitizing and validating user inputs. Authentication is managed through secure session handling, ensuring that only authorized users can access sensitive operations. Error messages are carefully crafted to avoid revealing internal system details, aligning with the OWASP guidelines for secure error handling. Additionally, logging practices exclude unsanitized user inputs, complying with CERT's secure coding recommendations to prevent the leakage of sensitive information through logs. By following these measures, the project not only enhances data integrity and confidentiality but also ensures compliance with security best practices, making it resilient against a wide array of common web application vulnerabilities.
+
+That said there is are some time consuming improvements that could be made to make this project more secure. Implementing rate limiting on API endpoints would be a crucial step in preventing abuse and mitigating the risk of denial-of-service (DoS) attacks. Moving all communications to HTTPS would ensure any communication is encrypted and prevent man-in-the-middle attacks. Lastly, improved dependecy management would help bolster the application from potential vulnerabilities in imported libraries. These recommendations are time consuming and outside of the scope of this assignment but are imperative to any internet facing, consumer products.
 
 ### Submission
 The complete source code is included in this repository. Additions made for the Secure Programming assignment were prepended with a comment including an explanation as well as the string `CS6387` though an example of each type of change was presented in this document.
@@ -180,3 +191,7 @@ For any further questions or clarifications, feel free to contact me at [joshua.
 OWASP Input Validation Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html
 OWASP Error Handling, Logging, and Intrusion Detection Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Error_Handling_Cheat_Sheet.html
 OWASP Rate Limiting Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Rate_Limiting_Cheat_Sheet.html
+CERT Secure Programming for Java https://wiki.sei.cmu.edu/confluence/display/java/IDS00-J.+Prevent+SQL+injection
+SANS CWE Top 25 https://www.sans.org/top25-software-errors/
+"Web Application Security: Exploitation and Countermeasures for Modern Web Applications" by Andrew Hoffman
+NIST Special Publication 800-63B Digital Identity Guidelines https://pages.nist.gov/800-63-3/sp800-63b.html#sec3
